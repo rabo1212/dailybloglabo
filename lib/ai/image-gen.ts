@@ -1,4 +1,4 @@
-import Replicate from 'replicate';
+import { fal } from '@fal-ai/client';
 import fs from 'fs';
 import path from 'path';
 import type { Tab, Edition } from '@/lib/types';
@@ -20,45 +20,48 @@ export async function generateCoverImage(
   date: string,
   edition: Edition
 ): Promise<string> {
-  if (!process.env.REPLICATE_API_TOKEN) {
+  const falKey = process.env.FAL_KEY;
+  if (!falKey) {
+    console.log('[image-gen] No FAL_KEY found, skipping image generation');
     return '';
   }
 
-  const replicate = new Replicate({
-    auth: process.env.REPLICATE_API_TOKEN,
-  });
+  fal.config({ credentials: falKey });
 
   const style = TAB_STYLES[tab];
-  const prompt = `${style}, representing: ${title}, editorial cover art, high quality, 16:9`;
+  const prompt = `${style}, representing: ${title}, editorial cover art, high quality, 16:9, no text, no letters`;
 
-  const output = await replicate.run('black-forest-labs/flux-schnell', {
-    input: {
-      prompt,
-      aspect_ratio: '16:9',
-      output_format: 'webp',
-    },
-  });
+  try {
+    const result = await fal.subscribe('fal-ai/flux/schnell', {
+      input: {
+        prompt,
+        image_size: 'landscape_16_9',
+        num_images: 1,
+      },
+    });
 
-  // flux-schnell returns an array of URLs or a ReadableStream
-  const imageUrl = Array.isArray(output) ? output[0] : output;
+    const imageUrl = result.data?.images?.[0]?.url;
+    if (!imageUrl) {
+      console.log('[image-gen] No image URL in response');
+      return '';
+    }
 
-  if (!imageUrl) {
+    // Download the image
+    const response = await fetch(imageUrl);
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    // Save to public directory
+    const dir = path.join(process.cwd(), 'public', 'images', 'posts', tab);
+    fs.mkdirSync(dir, { recursive: true });
+
+    const filename = `${date}-${edition}.webp`;
+    const filepath = path.join(dir, filename);
+    fs.writeFileSync(filepath, buffer);
+
+    console.log(`[image-gen] Saved cover image: ${filepath}`);
+    return `/images/posts/${tab}/${filename}`;
+  } catch (err) {
+    console.error('[image-gen] Failed:', err);
     return '';
   }
-
-  // Download the image
-  const response = await fetch(
-    typeof imageUrl === 'string' ? imageUrl : imageUrl.url
-  );
-  const buffer = Buffer.from(await response.arrayBuffer());
-
-  // Save to public directory
-  const dir = path.join(process.cwd(), 'public', 'images', 'posts', tab);
-  fs.mkdirSync(dir, { recursive: true });
-
-  const filename = `${date}-${edition}.webp`;
-  const filepath = path.join(dir, filename);
-  fs.writeFileSync(filepath, buffer);
-
-  return `/images/posts/${tab}/${filename}`;
 }
