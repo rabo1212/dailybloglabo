@@ -4,11 +4,11 @@ import path from 'path';
 import type { Tab, Edition } from '@/lib/types';
 
 const FALLBACK_STYLES: Record<Tab, string> = {
-  devlog: 'editorial photograph of a clean minimal desk with laptop and coffee mug, warm morning light through window, shallow depth of field, cozy workspace',
-  ai: 'editorial photograph of a humanoid robot hand reaching toward a human hand, soft blue backlighting, dramatic shallow depth of field, cinematic',
-  crypto: 'editorial photograph of a stack of golden coins on a reflective dark surface, dramatic rim lighting, bokeh background, luxury feel',
-  stocks: 'editorial photograph of a modern glass skyscraper district at golden hour, warm sun reflections, wide angle, architectural photography',
-  hot: 'editorial photograph of a crowded city street at sunset, silhouettes of people walking, warm golden light, street photography style',
+  devlog: 'editorial photograph of a developer seen from behind sitting at a clean desk with dual monitors, warm lamp light, cozy night workspace, shallow depth of field, cinematic',
+  ai: 'editorial photograph of a person seen from behind looking at a large glowing holographic display in a dark room, blue and purple ambient light, cinematic, futuristic',
+  crypto: 'editorial photograph of golden Bitcoin coins stacked on a dark reflective marble surface, dramatic rim lighting, shallow depth of field, luxury feel',
+  stocks: 'editorial photograph of a modern glass skyscraper financial district at golden hour, a silhouette of a person looking up at the buildings, warm light, wide angle',
+  hot: 'editorial photograph of a bustling city intersection at sunset seen from above, distant silhouettes of people crossing, warm golden light, cinematic aerial view',
 };
 
 export async function generateCoverImage(
@@ -27,7 +27,7 @@ export async function generateCoverImage(
   fal.config({ credentials: falKey });
 
   // Use AI-generated prompt if available, otherwise fallback
-  const noText = 'absolutely no text, no letters, no words, no numbers, no characters, no writing, no signs, no labels, no charts, no graphs, no screens with text, no code';
+  const noText = 'no text, no letters, no words, no numbers, no signs, no charts, no graphs, no close-up faces, no close-up hands, no distorted anatomy';
   const prompt = imagePrompt
     ? `${imagePrompt}, ${noText}`
     : `${FALLBACK_STYLES[tab]}, ${noText}`;

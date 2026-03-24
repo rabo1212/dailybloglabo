@@ -59,17 +59,17 @@ export async function generateImagePrompt(
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
       max_tokens: 200,
-      system: `You generate image prompts for a blog cover photo. Read the article and describe ONE visual scene that represents the topic.
+      system: `You generate image prompts for a blog cover photo. Read the article and describe ONE visual scene.
 
 STRICT RULES:
 - Output ONLY the prompt text. No explanations.
-- Describe a real-world PHOTO scene or ILLUSTRATION scene. Choose one style:
-  * Photo style: "editorial photograph of [scene], DSLR, shallow depth of field, natural lighting"
-  * Illustration style: "digital illustration of [scene], clean vector style, modern flat design"
-- Describe OBJECTS, ENVIRONMENTS, PEOPLE, ANIMALS — concrete things you can photograph
-- ABSOLUTELY ZERO text, letters, numbers, words, characters, signs, labels, screens with text, monitors with code, books with text, newspapers — NOTHING with any written language
-- No charts, graphs, candlestick patterns, or data visualizations (these always produce garbled text)
-- Under 80 words`,
+- Style: "editorial photograph of [scene], DSLR, shallow depth of field, cinematic lighting, 8k"
+- People ARE allowed but ONLY from behind, from far away, or as silhouettes. NEVER show close-up faces or hands.
+- Good: "a developer seen from behind sitting at a desk", "silhouette of a trader looking at city skyline", "distant crowd in a plaza"
+- Bad: "close-up portrait", "person smiling", "hands typing on keyboard"
+- NEVER include text, letters, numbers, signs, labels, screens with text, monitors with code
+- NEVER include charts, graphs, candlestick patterns, or data visualizations
+- Under 60 words`,
       messages: [
         { role: 'user', content: `Article category: ${tab}\n\nArticle:\n${articleContent.slice(0, 1500)}` },
       ],
