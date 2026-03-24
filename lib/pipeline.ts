@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Tab, Edition } from './types';
+import { Tab, Edition, Lang } from './types';
 import { todayStr } from './utils';
 import { fetchGitHubActivity } from './sources/github';
 import { fetchAINews } from './sources/ai-news';
@@ -18,24 +18,26 @@ import { hotTopicsPrompt } from './ai/prompts/hot-topics';
 interface PipelineResult {
   tab: Tab;
   edition: Edition;
+  lang: Lang;
   date: string;
   filePath: string;
   imagePath: string;
   title: string;
 }
 
-export async function runPipeline(tab: Tab, edition: Edition): Promise<PipelineResult> {
+export async function runPipeline(tab: Tab, edition: Edition, lang: Lang = 'en'): Promise<PipelineResult> {
   const date = todayStr();
-  console.log(`[pipeline] Starting ${tab} ${edition.toUpperCase()} edition for ${date}`);
+  console.log(`[pipeline] Starting ${tab} ${edition.toUpperCase()} [${lang.toUpperCase()}] edition for ${date}`);
 
   // Step 1: Fetch data
   console.log(`[pipeline] Fetching data for ${tab}...`);
   const prompt = await buildPrompt(tab, edition);
 
   // Step 2: Generate post with Claude
-  console.log(`[pipeline] Generating post with Claude...`);
-  const systemPrompt = `You are a professional blog writer for DailyBlogLabo. Write in English. Output ONLY the blog post content in markdown format. Start with a compelling title on the first line prefixed with "# ".`;
-  const postContent = await generatePost(systemPrompt, prompt);
+  console.log(`[pipeline] Generating post with Claude (${lang})...`);
+  const langInstruction = lang === 'ko' ? 'Write in Korean (한국어).' : 'Write in English.';
+  const systemPrompt = `You are a professional blog writer for DailyBlogLabo. ${langInstruction} Output ONLY the blog post content in markdown format. Start with a compelling title on the first line prefixed with "# ".`;
+  const postContent = await generatePost(systemPrompt, prompt, lang);
 
   // Extract title from first line
   const lines = postContent.split('\n');
@@ -48,9 +50,10 @@ export async function runPipeline(tab: Tab, edition: Edition): Promise<PipelineR
   const imagePath = await generateCoverImage(tab, title, date, edition);
 
   // Step 4: Write MDX file
-  const slug = `${date}-${edition}`;
+  // Korean posts get -ko suffix, English posts have no suffix (backwards compatible)
+  const slug = lang === 'ko' ? `${date}-${edition}-ko` : `${date}-${edition}`;
   const summary = body.split('\n').find(l => l.trim().length > 20)?.slice(0, 160) || title;
-  const mdxContent = buildMDX({ title, tab, edition, date, summary, imagePath, body });
+  const mdxContent = buildMDX({ title, tab, edition, date, summary, imagePath, body, lang });
 
   const outputDir = path.join(process.cwd(), 'content/posts', tab);
   fs.mkdirSync(outputDir, { recursive: true });
@@ -58,7 +61,7 @@ export async function runPipeline(tab: Tab, edition: Edition): Promise<PipelineR
   fs.writeFileSync(filePath, mdxContent, 'utf-8');
 
   console.log(`[pipeline] Done! Saved to ${filePath}`);
-  return { tab, edition, date, filePath, imagePath, title };
+  return { tab, edition, lang, date, filePath, imagePath, title };
 }
 
 async function buildPrompt(tab: Tab, edition: Edition): Promise<string> {
@@ -106,6 +109,7 @@ function buildMDX(opts: {
   summary: string;
   imagePath: string;
   body: string;
+  lang: Lang;
 }): string {
   return `---
 title: "${opts.title.replace(/"/g, '\\"')}"
@@ -113,6 +117,7 @@ tab: "${opts.tab}"
 edition: "${opts.edition}"
 date: "${opts.date}"
 summary: "${opts.summary.replace(/"/g, '\\"')}"
+lang: "${opts.lang}"
 ${opts.imagePath ? `image: "${opts.imagePath}"` : ''}
 ---
 

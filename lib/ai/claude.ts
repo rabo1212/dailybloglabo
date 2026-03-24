@@ -8,18 +8,26 @@ function getClient(): Anthropic | null {
 
 export async function generatePost(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  lang?: 'en' | 'ko'
 ): Promise<string> {
   const client = getClient();
+
+  // Prepend Korean instruction when lang is 'ko'
+  let finalSystemPrompt = systemPrompt;
+  if (lang === 'ko') {
+    finalSystemPrompt = 'Write entirely in Korean (한국어). Use natural Korean writing style, not translated-sounding Korean. Avoid awkward direct translations from English.\n\n' + systemPrompt;
+  }
+
   if (!client) {
-    return `[MOCK] This is a mock post generated without an API key.\n\nSystem prompt received: ${systemPrompt.slice(0, 100)}...\n\nUser prompt received: ${userPrompt.slice(0, 100)}...`;
+    return `[MOCK] This is a mock post generated without an API key.\n\nSystem prompt received: ${finalSystemPrompt.slice(0, 100)}...\n\nUser prompt received: ${userPrompt.slice(0, 100)}...`;
   }
 
   try {
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
       max_tokens: 1500,
-      system: systemPrompt,
+      system: finalSystemPrompt,
       messages: [
         { role: 'user', content: userPrompt },
       ],

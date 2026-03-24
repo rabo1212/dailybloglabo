@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getPostsByTab } from "@/lib/utils";
 import { TAB_CONFIG, Tab } from "@/lib/types";
-import PostCard from "@/components/PostCard";
+import PostGrid from "@/components/PostGrid";
 
 const VALID_TABS: Tab[] = ["devlog", "ai", "crypto", "stocks", "hot"];
 
@@ -31,6 +31,7 @@ export default function TabPage({ params }: TabPageProps) {
   }
 
   const config = TAB_CONFIG[tab];
+  // Pass all posts for this tab (both languages) - PostGrid handles filtering
   const posts = getPostsByTab(tab);
 
   return (
@@ -44,20 +45,7 @@ export default function TabPage({ params }: TabPageProps) {
         </p>
       </div>
 
-      {posts.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-text-dim text-lg">No {config.label.toLowerCase()} posts yet</p>
-          <p className="text-text-dim/60 text-sm mt-2">
-            Posts will appear here once the automated pipeline runs.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      )}
+      <PostGrid posts={posts} />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Post, TAB_CONFIG } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
 import EditionBadge from "./EditionBadge";
 
 interface PostCardProps {
@@ -51,7 +50,7 @@ export default function PostCard({ post }: PostCardProps) {
             </span>
             <EditionBadge edition={post.edition} />
             <span className="text-xs text-text-dim ml-auto">
-              {formatDate(post.date)}
+              {new Date(post.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
           </div>
 

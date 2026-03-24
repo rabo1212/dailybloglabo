@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getPost, getPostsByTab, formatDate } from "@/lib/utils";
-import { TAB_CONFIG, Tab } from "@/lib/types";
+import { TAB_CONFIG, Tab, Lang } from "@/lib/types";
 import EditionBadge from "@/components/EditionBadge";
 
 const VALID_TABS: Tab[] = ["devlog", "ai", "crypto", "stocks", "hot"];
@@ -36,6 +36,22 @@ export default function PostPage({ params }: PostPageProps) {
   }
 
   const tabConfig = TAB_CONFIG[post.tab];
+  const postLang: Lang = post.lang || 'en';
+
+  // Find the other language version
+  // English slug: "2026-03-24-am", Korean slug: "2026-03-24-am-ko"
+  let otherLangSlug: string | null = null;
+  if (postLang === 'ko' && post.slug.endsWith('-ko')) {
+    // Check if English version exists
+    const enSlug = post.slug.replace(/-ko$/, '');
+    const enPost = getPost(tab, enSlug);
+    if (enPost) otherLangSlug = enSlug;
+  } else {
+    // Check if Korean version exists
+    const koSlug = post.slug + '-ko';
+    const koPost = getPost(tab, koSlug);
+    if (koPost) otherLangSlug = koSlug;
+  }
 
   // Get sibling posts for prev/next navigation
   const tabPosts = getPostsByTab(tab);
@@ -75,6 +91,14 @@ export default function PostPage({ params }: PostPageProps) {
         <span className="text-xs text-text-dim">
           {formatDate(post.date)}
         </span>
+        {otherLangSlug && (
+          <Link
+            href={`/${tab}/${otherLangSlug}`}
+            className="ml-auto text-xs font-medium px-2 py-0.5 rounded border border-card-border text-text-dim hover:text-text-primary hover:border-text-dim/40 transition-colors"
+          >
+            {postLang === 'ko' ? 'Read in English' : '한국어로 읽기'}
+          </Link>
+        )}
       </div>
 
       {/* Title */}

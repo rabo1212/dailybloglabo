@@ -4,21 +4,43 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Light mode (default) */
+:root {
+  --color-bg: #ffffff;
+  --color-card: #f4f4f5;
+  --color-card-border: #e4e4e7;
+  --color-text-primary: #09090b;
+  --color-text-body: #3f3f46;
+  --color-text-dim: #a1a1aa;
+}
+
+/* Dark mode */
+.dark {
+  --color-bg: #09090b;
+  --color-card: #141418;
+  --color-card-border: #1f1f26;
+  --color-text-primary: #fafafa;
+  --color-text-body: #cdcdd6;
+  --color-text-dim: #6b6b7b;
+}
+
 body {
-  background: #09090b;
-  color: #cdcdd6;
+  background: var(--color-bg);
+  color: var(--color-text-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 ::selection {
   background: rgba(162, 165, 255, 0.3);
 }
 
+/* Prose styles for markdown content */
 .prose {
-  color: #cdcdd6;
+  color: var(--color-text-body);
 }
 
 .prose h1, .prose h2, .prose h3 {
-  color: #fafafa;
+  color: var(--color-text-primary);
 }
 
 .prose a {
@@ -26,7 +48,7 @@ body {
 }
 
 .prose strong {
-  color: #fafafa;
+  color: var(--color-text-primary);
 }
 
 .prose code {
@@ -35,4 +57,13 @@ body {
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
   font-family: 'JetBrains Mono', monospace;
+}
+
+.prose blockquote {
+  border-color: var(--color-card-border);
+  color: var(--color-text-dim);
+}
+
+.prose hr {
+  border-color: var(--color-card-border);
 }

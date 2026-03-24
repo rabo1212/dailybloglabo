@@ -1,5 +1,5 @@
 import { getAllPosts } from "@/lib/utils";
-import PostCard from "@/components/PostCard";
+import PostGrid from "@/components/PostGrid";
 
 export default function HomePage() {
   const posts = getAllPosts();
@@ -15,20 +15,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      {posts.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-text-dim text-lg">No posts yet</p>
-          <p className="text-text-dim/60 text-sm mt-2">
-            Posts will appear here once the automated pipeline runs.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {posts.map((post) => (
-            <PostCard key={`${post.tab}-${post.slug}`} post={post} />
-          ))}
-        </div>
-      )}
+      <PostGrid posts={posts} />
     </div>
   );
 }

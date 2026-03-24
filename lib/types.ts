@@ -1,5 +1,6 @@
 export type Tab = 'devlog' | 'ai' | 'crypto' | 'stocks' | 'hot';
 export type Edition = 'am' | 'pm';
+export type Lang = 'en' | 'ko';
 
 export interface PostFrontmatter {
   title: string;
@@ -8,6 +9,7 @@ export interface PostFrontmatter {
   date: string;
   summary: string;
   image?: string;
+  lang?: Lang;
 }
 
 export interface Post extends PostFrontmatter {
