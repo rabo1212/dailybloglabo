@@ -27,17 +27,18 @@ export async function generateCoverImage(
   fal.config({ credentials: falKey });
 
   // Use AI-generated prompt if available, otherwise fallback
-  const noText = 'no text, no letters, no words, no numbers, no signs, no charts, no graphs, no close-up faces, no close-up hands, no distorted anatomy';
+  const noText = 'no text, no letters, no words, no numbers, no signs, no charts, no graphs, no data visualizations';
   const prompt = imagePrompt
     ? `${imagePrompt}, ${noText}`
     : `${FALLBACK_STYLES[tab]}, ${noText}`;
 
   try {
-    const result = await fal.subscribe('fal-ai/flux/schnell', {
+    const result = await fal.subscribe('fal-ai/flux-pro/v1.1', {
       input: {
         prompt,
         image_size: 'landscape_16_9',
         num_images: 1,
+        safety_tolerance: '5',
       },
     });
 
