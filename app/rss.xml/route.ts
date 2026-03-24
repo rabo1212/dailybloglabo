@@ -21,7 +21,7 @@ export async function GET() {
     <title>DAYLOG_EV</title>
     <link>${siteUrl}</link>
     <description>Automated multi-channel news blog powered by AI</description>
-    <language>en</language>
+    <language>ko</language>
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
     ${items}
   </channel>

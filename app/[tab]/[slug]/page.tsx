@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getPost, getPostsByTab, formatDate } from "@/lib/utils";
-import { TAB_CONFIG, Tab, Lang } from "@/lib/types";
+import { TAB_CONFIG, Tab } from "@/lib/types";
 import EditionBadge from "@/components/EditionBadge";
 
-const VALID_TABS: Tab[] = ["devlog", "ai", "crypto", "stocks", "hot"];
+const VALID_TABS: Tab[] = ["ai", "crypto", "stocks", "hot", "devlog"];
 
 interface PostPageProps {
   params: { tab: string; slug: string };
@@ -17,7 +17,7 @@ export function generateMetadata({ params }: PostPageProps) {
   const post = getPost(tab, params.slug);
   if (!post) return {};
   return {
-    title: `${post.title} - DailyBlogLabo`,
+    title: `${post.title} - DAYLOG_EV`,
     description: post.summary,
   };
 }
@@ -36,22 +36,6 @@ export default function PostPage({ params }: PostPageProps) {
   }
 
   const tabConfig = TAB_CONFIG[post.tab];
-  const postLang: Lang = post.lang || 'en';
-
-  // Find the other language version
-  // English slug: "2026-03-24-am", Korean slug: "2026-03-24-am-ko"
-  let otherLangSlug: string | null = null;
-  if (postLang === 'ko' && post.slug.endsWith('-ko')) {
-    // Check if English version exists
-    const enSlug = post.slug.replace(/-ko$/, '');
-    const enPost = getPost(tab, enSlug);
-    if (enPost) otherLangSlug = enSlug;
-  } else {
-    // Check if Korean version exists
-    const koSlug = post.slug + '-ko';
-    const koPost = getPost(tab, koSlug);
-    if (koPost) otherLangSlug = koSlug;
-  }
 
   // Get sibling posts for prev/next navigation
   const tabPosts = getPostsByTab(tab);
@@ -91,14 +75,6 @@ export default function PostPage({ params }: PostPageProps) {
         <span className="text-xs text-text-dim">
           {formatDate(post.date)}
         </span>
-        {otherLangSlug && (
-          <Link
-            href={`/${tab}/${otherLangSlug}`}
-            className="ml-auto text-xs font-medium px-2 py-0.5 rounded border border-card-border text-text-dim hover:text-text-primary hover:border-text-dim/40 transition-colors"
-          >
-            {postLang === 'ko' ? 'Read in English' : '한국어로 읽기'}
-          </Link>
-        )}
       </div>
 
       {/* Title */}
@@ -129,11 +105,8 @@ export default function PostPage({ params }: PostPageProps) {
       <nav className="mt-16 pt-8 border-t border-card-border grid grid-cols-2 gap-4">
         <div>
           {prevPost && (
-            <Link
-              href={`/${tab}/${prevPost.slug}`}
-              className="group block"
-            >
-              <span className="text-xs text-text-dim">Previous</span>
+            <Link href={`/${tab}/${prevPost.slug}`} className="group block">
+              <span className="text-xs text-text-dim">이전</span>
               <p className="text-sm text-text-body group-hover:text-text-primary transition-colors line-clamp-1 mt-0.5">
                 {prevPost.title}
               </p>
@@ -142,11 +115,8 @@ export default function PostPage({ params }: PostPageProps) {
         </div>
         <div className="text-right">
           {nextPost && (
-            <Link
-              href={`/${tab}/${nextPost.slug}`}
-              className="group block"
-            >
-              <span className="text-xs text-text-dim">Next</span>
+            <Link href={`/${tab}/${nextPost.slug}`} className="group block">
+              <span className="text-xs text-text-dim">다음</span>
               <p className="text-sm text-text-body group-hover:text-text-primary transition-colors line-clamp-1 mt-0.5">
                 {nextPost.title}
               </p>
@@ -158,10 +128,6 @@ export default function PostPage({ params }: PostPageProps) {
   );
 }
 
-/**
- * Minimal markdown-to-HTML converter for post content.
- * Handles common patterns: headings, paragraphs, bold, italic, links, code, lists, blockquotes, hr, images.
- */
 function markdownToHtml(md: string): string {
   const lines = md.split("\n");
   const html: string[] = [];
@@ -172,7 +138,6 @@ function markdownToHtml(md: string): string {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    // Fenced code blocks
     if (line.trimStart().startsWith("```")) {
       if (inCodeBlock) {
         html.push(`<pre><code>${codeContent.join("\n")}</code></pre>`);
@@ -189,7 +154,6 @@ function markdownToHtml(md: string): string {
       continue;
     }
 
-    // Close list if line doesn't continue it
     if (inList === "ul" && !line.match(/^\s*[-*]\s/)) {
       html.push("</ul>");
       inList = null;
@@ -199,16 +163,13 @@ function markdownToHtml(md: string): string {
       inList = null;
     }
 
-    // Blank line
     if (line.trim() === "") continue;
 
-    // Horizontal rule
     if (line.match(/^---+$/)) {
       html.push("<hr>");
       continue;
     }
 
-    // Headings
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
       const level = headingMatch[1].length;
@@ -216,13 +177,11 @@ function markdownToHtml(md: string): string {
       continue;
     }
 
-    // Blockquote
     if (line.startsWith("> ")) {
       html.push(`<blockquote><p>${inline(line.slice(2))}</p></blockquote>`);
       continue;
     }
 
-    // Unordered list
     const ulMatch = line.match(/^\s*[-*]\s+(.+)$/);
     if (ulMatch) {
       if (inList !== "ul") { html.push("<ul>"); inList = "ul"; }
@@ -230,7 +189,6 @@ function markdownToHtml(md: string): string {
       continue;
     }
 
-    // Ordered list
     const olMatch = line.match(/^\s*\d+\.\s+(.+)$/);
     if (olMatch) {
       if (inList !== "ol") { html.push("<ol>"); inList = "ol"; }
@@ -238,24 +196,37 @@ function markdownToHtml(md: string): string {
       continue;
     }
 
-    // Image
-    const imgMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-    if (imgMatch) {
-      html.push(`<img src="${imgMatch[2]}" alt="${escapeHtml(imgMatch[1])}" class="rounded-lg my-4" />`);
+    // Table row
+    if (line.includes("|") && line.trim().startsWith("|")) {
+      const cells = line.split("|").slice(1, -1).map(c => c.trim());
+      if (cells.every(c => c.match(/^[-:]+$/))) continue; // separator row
+      const tag = html.length > 0 && html[html.length - 1].includes("<th") ? "td" : "th";
+      const row = cells.map(c => `<${tag === "th" && !html.some(h => h.includes("<th")) ? "th" : "td"}>${inline(c)}</${tag === "th" && !html.some(h => h.includes("<th")) ? "th" : "td"}>`).join("");
+      html.push(`<tr>${row}</tr>`);
       continue;
     }
 
-    // Paragraph
     html.push(`<p>${inline(line)}</p>`);
   }
 
   if (inList) html.push(`</${inList}>`);
   if (inCodeBlock) html.push(`<pre><code>${codeContent.join("\n")}</code></pre>`);
 
-  return html.join("\n");
+  // Wrap table rows
+  let result = html.join("\n");
+  if (result.includes("<tr>")) {
+    result = result.replace(/(<tr>[\s\S]*?<\/tr>)/g, (match, _, offset) => {
+      const before = result.slice(0, offset);
+      if (!before.includes("<table>") || before.lastIndexOf("</table>") > before.lastIndexOf("<table>")) {
+        return `<table>${match}</table>`;
+      }
+      return match;
+    });
+  }
+
+  return result;
 }
 
-/** Process inline markdown: bold, italic, code, links, images */
 function inline(text: string): string {
   return text
     .replace(/`([^`]+)`/g, '<code>$1</code>')

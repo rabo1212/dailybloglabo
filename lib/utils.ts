@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { Post, PostFrontmatter, Tab, Lang } from './types';
+import { Post, PostFrontmatter, Tab } from './types';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/posts');
 
-export function getAllPosts(lang?: Lang): Post[] {
+export function getAllPosts(): Post[] {
   const tabs: Tab[] = ['ai', 'crypto', 'stocks', 'hot', 'devlog'];
   const posts: Post[] = [];
 
@@ -18,9 +18,7 @@ export function getAllPosts(lang?: Lang): Post[] {
       const raw = fs.readFileSync(path.join(tabDir, file), 'utf-8');
       const { data, content } = matter(raw);
       const slug = file.replace('.mdx', '');
-      // Posts without lang field are treated as 'en' for backwards compatibility
-      const postLang: Lang = (data as PostFrontmatter).lang || 'en';
-      posts.push({ ...(data as PostFrontmatter), lang: postLang, slug, content });
+      posts.push({ ...(data as PostFrontmatter), lang: 'ko', slug, content });
     }
   }
 
@@ -28,20 +26,15 @@ export function getAllPosts(lang?: Lang): Post[] {
   const today = todayStr();
   const published = posts.filter(p => p.date <= today);
 
-  const sorted = published.sort((a, b) => {
+  return published.sort((a, b) => {
     const dateCompare = b.date.localeCompare(a.date);
     if (dateCompare !== 0) return dateCompare;
     return a.edition === 'pm' ? -1 : 1;
   });
-
-  if (lang) {
-    return sorted.filter(p => (p.lang || 'en') === lang);
-  }
-  return sorted;
 }
 
-export function getPostsByTab(tab: Tab, lang?: Lang): Post[] {
-  return getAllPosts(lang).filter(p => p.tab === tab);
+export function getPostsByTab(tab: Tab): Post[] {
+  return getAllPosts().filter(p => p.tab === tab);
 }
 
 export function getPost(tab: Tab, slug: string): Post | undefined {
@@ -51,12 +44,12 @@ export function getPost(tab: Tab, slug: string): Post | undefined {
 
   const raw = fs.readFileSync(filePath, 'utf-8');
   const { data, content } = matter(raw);
-  return { ...(data as PostFrontmatter), slug, content };
+  return { ...(data as PostFrontmatter), lang: 'ko', slug, content };
 }
 
 export function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 export function todayStr(): string {

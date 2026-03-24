@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { getPostsByTab } from "@/lib/utils";
 import { TAB_CONFIG, Tab } from "@/lib/types";
-import PostGrid from "@/components/PostGrid";
+import PostCard from "@/components/PostCard";
 
-const VALID_TABS: Tab[] = ["devlog", "ai", "crypto", "stocks", "hot"];
+const VALID_TABS: Tab[] = ["ai", "crypto", "stocks", "hot", "devlog"];
 
 interface TabPageProps {
   params: { tab: string };
@@ -18,8 +18,7 @@ export function generateMetadata({ params }: TabPageProps) {
   if (!VALID_TABS.includes(tab)) return {};
   const config = TAB_CONFIG[tab];
   return {
-    title: `${config.label} - DailyBlogLabo`,
-    description: `Latest ${config.label} posts`,
+    title: `${config.label} - DAYLOG_EV`,
   };
 }
 
@@ -31,7 +30,6 @@ export default function TabPage({ params }: TabPageProps) {
   }
 
   const config = TAB_CONFIG[tab];
-  // Pass all posts for this tab (both languages) - PostGrid handles filtering
   const posts = getPostsByTab(tab);
 
   return (
@@ -41,11 +39,21 @@ export default function TabPage({ params }: TabPageProps) {
           {config.label}
         </h1>
         <p className="text-sm text-text-dim mt-1">
-          {posts.length} {posts.length === 1 ? "post" : "posts"}
+          {posts.length}개 포스트
         </p>
       </div>
 
-      <PostGrid posts={posts} />
+      {posts.length === 0 ? (
+        <div className="text-center py-20">
+          <p className="text-text-dim text-lg">아직 게시글이 없습니다</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {posts.map((post) => (
+            <PostCard key={`${post.tab}-${post.slug}`} post={post} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

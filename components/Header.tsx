@@ -1,7 +1,6 @@
 import Link from "next/link";
 import TabNav from "./TabNav";
 import ThemeToggle from "./ThemeToggle";
-import LangToggle from "./LangToggle";
 
 export default function Header() {
   return (
@@ -11,15 +10,14 @@ export default function Header() {
           <Link href="/" className="text-text-primary font-bold text-lg tracking-tight">
             DAYLOG_EV
           </Link>
-          <nav className="flex items-center gap-5 text-sm text-text-dim">
-            <LangToggle />
+          <nav className="flex items-center gap-4 text-sm text-text-dim">
             <Link href="/search" className="hover:text-text-body transition-colors">
               Search
             </Link>
             <Link href="/archive" className="hover:text-text-body transition-colors">
               Archive
             </Link>
-            <Link href="/feed.xml" className="hover:text-text-body transition-colors">
+            <Link href="/rss.xml" className="hover:text-text-body transition-colors">
               RSS
             </Link>
             <ThemeToggle />
