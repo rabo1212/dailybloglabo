@@ -7,7 +7,7 @@ import { fetchAINews } from './sources/ai-news';
 import { fetchCryptoData } from './sources/crypto';
 import { fetchStockData } from './sources/stocks';
 import { fetchTrendingData } from './sources/trending';
-import { generatePost } from './ai/claude';
+import { generatePost, generateImagePrompt } from './ai/claude';
 import { generateCoverImage } from './ai/image-gen';
 import { devlogPrompt } from './ai/prompts/devlog';
 import { aiNewsPrompt } from './ai/prompts/ai-news';
@@ -36,7 +36,19 @@ export async function runPipeline(tab: Tab, edition: Edition, lang: Lang = 'en')
   // Step 2: Generate post with Claude
   console.log(`[pipeline] Generating post with Claude (${lang})...`);
   const langInstruction = lang === 'ko' ? 'Write in Korean (한국어).' : 'Write in English.';
-  const systemPrompt = `You are a professional blog writer for DailyBlogLabo. ${langInstruction} Output ONLY the blog post content in markdown format. Start with a compelling title on the first line prefixed with "# ".`;
+  const systemPrompt = `You are a senior journalist and analyst writing for DailyBlogLabo, a daily tech/finance newsletter read by developers and founders. ${langInstruction}
+
+Output ONLY the blog post content in markdown format. Start with a compelling title on the first line prefixed with "# ".
+
+Writing standards:
+- Write with depth and insight, not just surface-level summaries
+- Explain WHY things matter, not just WHAT happened
+- Connect dots between different stories and broader trends
+- Include specific data points, names, and figures
+- Add your analytical perspective — what does this mean going forward?
+- Use vivid, engaging prose that keeps readers scrolling
+- Minimum 800 words, aim for 1000-1200 words
+- Each section should have substantial content, not just bullet points`;
   const postContent = await generatePost(systemPrompt, prompt, lang);
 
   // Extract title from first line
@@ -45,9 +57,12 @@ export async function runPipeline(tab: Tab, edition: Edition, lang: Lang = 'en')
   const title = titleLine ? titleLine.replace('# ', '').trim() : `${tab} ${edition.toUpperCase()} - ${date}`;
   const body = lines.filter(l => l !== titleLine).join('\n').trim();
 
-  // Step 3: Generate cover image
+  // Step 3: Generate cover image based on article content
+  console.log(`[pipeline] Generating image prompt from article...`);
+  const imagePrompt = await generateImagePrompt(body, tab);
+  console.log(`[pipeline] Image prompt: ${imagePrompt.slice(0, 80)}...`);
   console.log(`[pipeline] Generating cover image...`);
-  const imagePath = await generateCoverImage(tab, title, date, edition);
+  const imagePath = await generateCoverImage(tab, title, date, edition, imagePrompt);
 
   // Step 4: Write MDX file
   // Korean posts get -ko suffix, English posts have no suffix (backwards compatible)

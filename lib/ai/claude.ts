@@ -13,10 +13,9 @@ export async function generatePost(
 ): Promise<string> {
   const client = getClient();
 
-  // Prepend Korean instruction when lang is 'ko'
   let finalSystemPrompt = systemPrompt;
   if (lang === 'ko') {
-    finalSystemPrompt = 'Write entirely in Korean (한국어). Use natural Korean writing style, not translated-sounding Korean. Avoid awkward direct translations from English.\n\n' + systemPrompt;
+    finalSystemPrompt = `한국어(Korean)로 작성하세요. 번역체가 아닌 자연스러운 한국어 문체를 사용하세요. "~입니다" 체와 "~이다" 체를 적절히 섞어 쓰세요. 딱딱한 보고서가 아닌, 블로그 글처럼 읽히게 쓰세요.\n\n` + systemPrompt;
   }
 
   if (!client) {
@@ -26,7 +25,7 @@ export async function generatePost(
   try {
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: finalSystemPrompt,
       messages: [
         { role: 'user', content: userPrompt },
@@ -40,6 +39,46 @@ export async function generatePost(
   } catch (err) {
     console.error('[claude] API error:', err);
     return `[ERROR] Failed to generate post. Check API key.`;
+  }
+
+  return '';
+}
+
+/**
+ * Generate an image prompt based on article content.
+ * Uses Claude to create a descriptive, visual scene prompt.
+ */
+export async function generateImagePrompt(
+  articleContent: string,
+  tab: string
+): Promise<string> {
+  const client = getClient();
+  if (!client) return '';
+
+  try {
+    const message = await client.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 200,
+      system: `You are an expert at writing image generation prompts. Given a blog article, create a single descriptive prompt for a photorealistic or editorial illustration that visually represents the main topic. The image should look like a professional editorial/magazine cover photo.
+
+Rules:
+- Output ONLY the image prompt, nothing else
+- Describe a concrete visual scene, not abstract concepts
+- Include lighting, composition, and mood
+- NEVER include any text, letters, words, or typography in the scene
+- Keep it under 100 words
+- Make it cinematic and visually striking`,
+      messages: [
+        { role: 'user', content: `Article category: ${tab}\n\nArticle:\n${articleContent.slice(0, 1500)}` },
+      ],
+    });
+
+    const block = message.content[0];
+    if (block.type === 'text') {
+      return block.text.trim();
+    }
+  } catch (err) {
+    console.error('[claude] Image prompt generation failed:', err);
   }
 
   return '';
