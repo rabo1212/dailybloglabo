@@ -40,7 +40,8 @@ export async function generateCoverImage(
       },
     });
 
-    const imageUrl = result.data?.images?.[0]?.url;
+    const imageData = result.data?.images?.[0];
+    const imageUrl = imageData?.url;
     if (!imageUrl) {
       console.log('[image-gen] No image URL in response');
       return '';
@@ -50,11 +51,18 @@ export async function generateCoverImage(
     const response = await fetch(imageUrl);
     const buffer = Buffer.from(await response.arrayBuffer());
 
+    // Detect actual format from content-type or URL
+    const contentType = response.headers.get('content-type') || '';
+    let ext = 'jpg';
+    if (contentType.includes('webp')) ext = 'webp';
+    else if (contentType.includes('png')) ext = 'png';
+    else if (contentType.includes('jpeg') || contentType.includes('jpg')) ext = 'jpg';
+
     // Save to public directory
     const dir = path.join(process.cwd(), 'public', 'images', 'posts', tab);
     fs.mkdirSync(dir, { recursive: true });
 
-    const filename = `${date}-${edition}.webp`;
+    const filename = `${date}-${edition}.${ext}`;
     const filepath = path.join(dir, filename);
     fs.writeFileSync(filepath, buffer);
 
