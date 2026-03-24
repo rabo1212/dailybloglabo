@@ -5,13 +5,13 @@ import type { Tab, Edition } from '@/lib/types';
 
 const TAB_STYLES: Record<Tab, string> = {
   devlog:
-    'minimal dark terminal aesthetic, code on screen, monochrome with purple accent, abstract',
-  ai: 'neural network visualization, abstract data flow, dark background, blue and cyan tones, futuristic',
+    'abstract minimal dark aesthetic, glowing purple circuit lines on black background, geometric shapes, bokeh lights',
+  ai: 'abstract neural network nodes connected by glowing cyan lines, dark background, particles floating, depth of field',
   crypto:
-    'abstract blockchain visualization, dark background, gold and green tones, geometric patterns',
+    'abstract golden geometric shapes floating in dark space, hexagonal grid pattern, warm gold and green ambient light',
   stocks:
-    'abstract financial chart visualization, dark background, candlestick patterns, green and red accents',
-  hot: 'abstract trending arrows, viral network visualization, dark background, warm orange tones',
+    'abstract green and red light streaks on dark background, smooth flowing curves, minimal geometric shapes, bokeh',
+  hot: 'abstract warm orange energy waves radiating outward on dark background, dynamic motion blur, glowing particles',
 };
 
 export async function generateCoverImage(
@@ -29,7 +29,7 @@ export async function generateCoverImage(
   fal.config({ credentials: falKey });
 
   const style = TAB_STYLES[tab];
-  const prompt = `${style}, representing: ${title}, editorial cover art, high quality, 16:9, no text, no letters`;
+  const prompt = `${style}, editorial cover art, high quality, cinematic lighting, absolutely no text, no letters, no words, no numbers, no characters, no writing, no symbols, pure abstract visual only`;
 
   try {
     const result = await fal.subscribe('fal-ai/flux/schnell', {
