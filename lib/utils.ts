@@ -24,7 +24,11 @@ export function getAllPosts(lang?: Lang): Post[] {
     }
   }
 
-  const sorted = posts.sort((a, b) => {
+  // Filter out future-dated posts
+  const today = todayStr();
+  const published = posts.filter(p => p.date <= today);
+
+  const sorted = published.sort((a, b) => {
     const dateCompare = b.date.localeCompare(a.date);
     if (dateCompare !== 0) return dateCompare;
     return a.edition === 'pm' ? -1 : 1;
