@@ -17,9 +17,6 @@ export default function Header() {
             <Link href="/archive" className="hover:text-text-body transition-colors">
               Archive
             </Link>
-            <Link href="/rss.xml" className="hover:text-text-body transition-colors">
-              RSS
-            </Link>
             <ThemeToggle />
           </nav>
         </div>
