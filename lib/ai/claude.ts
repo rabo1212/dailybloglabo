@@ -59,15 +59,17 @@ export async function generateImagePrompt(
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
       max_tokens: 200,
-      system: `You are an expert at writing image generation prompts. Given a blog article, create a single descriptive prompt for a photorealistic or editorial illustration that visually represents the main topic. The image should look like a professional editorial/magazine cover photo.
+      system: `You generate image prompts for a blog cover photo. Read the article and describe ONE visual scene that represents the topic.
 
-Rules:
-- Output ONLY the image prompt, nothing else
-- Describe a concrete visual scene, not abstract concepts
-- Include lighting, composition, and mood
-- NEVER include any text, letters, words, or typography in the scene
-- Keep it under 100 words
-- Make it cinematic and visually striking`,
+STRICT RULES:
+- Output ONLY the prompt text. No explanations.
+- Describe a real-world PHOTO scene or ILLUSTRATION scene. Choose one style:
+  * Photo style: "editorial photograph of [scene], DSLR, shallow depth of field, natural lighting"
+  * Illustration style: "digital illustration of [scene], clean vector style, modern flat design"
+- Describe OBJECTS, ENVIRONMENTS, PEOPLE, ANIMALS — concrete things you can photograph
+- ABSOLUTELY ZERO text, letters, numbers, words, characters, signs, labels, screens with text, monitors with code, books with text, newspapers — NOTHING with any written language
+- No charts, graphs, candlestick patterns, or data visualizations (these always produce garbled text)
+- Under 80 words`,
       messages: [
         { role: 'user', content: `Article category: ${tab}\n\nArticle:\n${articleContent.slice(0, 1500)}` },
       ],

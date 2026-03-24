@@ -4,11 +4,11 @@ import path from 'path';
 import type { Tab, Edition } from '@/lib/types';
 
 const FALLBACK_STYLES: Record<Tab, string> = {
-  devlog: 'A developer workspace at night, multiple monitors glowing with code, purple ambient lighting, coffee cup, cinematic wide shot',
-  ai: 'A futuristic control room with holographic displays showing neural network diagrams, blue and cyan lighting, cinematic',
-  crypto: 'A high-tech trading desk with golden Bitcoin hologram floating above, dark moody lighting, cinematic wide angle',
-  stocks: 'Wall Street at golden hour, financial district skyscrapers reflecting sunset, green and red ticker lights, cinematic',
-  hot: 'A bustling city intersection at night from above, neon signs, crowds of people, warm orange street lights, cinematic aerial shot',
+  devlog: 'editorial photograph of a clean minimal desk with laptop and coffee mug, warm morning light through window, shallow depth of field, cozy workspace',
+  ai: 'editorial photograph of a humanoid robot hand reaching toward a human hand, soft blue backlighting, dramatic shallow depth of field, cinematic',
+  crypto: 'editorial photograph of a stack of golden coins on a reflective dark surface, dramatic rim lighting, bokeh background, luxury feel',
+  stocks: 'editorial photograph of a modern glass skyscraper district at golden hour, warm sun reflections, wide angle, architectural photography',
+  hot: 'editorial photograph of a crowded city street at sunset, silhouettes of people walking, warm golden light, street photography style',
 };
 
 export async function generateCoverImage(
@@ -27,9 +27,10 @@ export async function generateCoverImage(
   fal.config({ credentials: falKey });
 
   // Use AI-generated prompt if available, otherwise fallback
+  const noText = 'absolutely no text, no letters, no words, no numbers, no characters, no writing, no signs, no labels, no charts, no graphs, no screens with text, no code';
   const prompt = imagePrompt
-    ? `${imagePrompt}, photorealistic, editorial photography, cinematic lighting, 16:9, no text no letters no words no writing`
-    : `${FALLBACK_STYLES[tab]}, photorealistic, editorial photography, no text no letters no words`;
+    ? `${imagePrompt}, ${noText}`
+    : `${FALLBACK_STYLES[tab]}, ${noText}`;
 
   try {
     const result = await fal.subscribe('fal-ai/flux/schnell', {
