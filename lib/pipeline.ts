@@ -79,6 +79,19 @@ Writing standards:
   return { tab, edition, lang, date, filePath, imagePath, title };
 }
 
+function getExistingTitles(tab: Tab): string[] {
+  const tabDir = path.join(process.cwd(), 'content/posts', tab);
+  if (!fs.existsSync(tabDir)) return [];
+  const files = fs.readdirSync(tabDir).filter(f => f.endsWith('.mdx'));
+  const titles: string[] = [];
+  for (const file of files) {
+    const raw = fs.readFileSync(path.join(tabDir, file), 'utf-8');
+    const match = raw.match(/^title:\s*"(.+)"/m);
+    if (match) titles.push(match[1]);
+  }
+  return titles;
+}
+
 async function buildPrompt(tab: Tab, edition: Edition): Promise<string> {
   switch (tab) {
     case 'devlog': {
@@ -111,7 +124,12 @@ async function buildPrompt(tab: Tab, edition: Edition): Promise<string> {
     }
     case 'hot': {
       const data = await fetchTrendingData();
-      return hotTopicsPrompt(edition, data);
+      const existing = getExistingTitles('hot');
+      let prompt = hotTopicsPrompt(edition, data);
+      if (existing.length > 0) {
+        prompt += `\n\nIMPORTANT: The following topics have ALREADY been covered. Do NOT write about them again. Pick DIFFERENT stories from the trending data:\n${existing.map(t => `- "${t}"`).join('\n')}`;
+      }
+      return prompt;
     }
   }
 }
