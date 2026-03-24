@@ -36,7 +36,7 @@ export async function runPipeline(tab: Tab, edition: Edition, lang: Lang = 'en')
   // Step 2: Generate post with Claude
   console.log(`[pipeline] Generating post with Claude (${lang})...`);
   const langInstruction = lang === 'ko' ? 'Write in Korean (한국어).' : 'Write in English.';
-  const systemPrompt = `You are a senior journalist and analyst writing for DailyBlogLabo, a daily tech/finance newsletter read by developers and founders. ${langInstruction}
+  const systemPrompt = `You are a senior journalist and analyst writing for DAYLOG_EV, a daily tech/finance newsletter read by developers and founders. ${langInstruction}
 
 Output ONLY the blog post content in markdown format. Start with a compelling title on the first line prefixed with "# ".
 

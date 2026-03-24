@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "DailyBlogLabo",
+  title: "DAYLOG_EV",
   description: "Automated multi-channel news blog",
 };
 

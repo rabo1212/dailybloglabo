@@ -1,4 +1,4 @@
-export type Tab = 'devlog' | 'ai' | 'crypto' | 'stocks' | 'hot';
+export type Tab = 'ai' | 'crypto' | 'stocks' | 'hot' | 'devlog';
 export type Edition = 'am' | 'pm';
 export type Lang = 'en' | 'ko';
 
@@ -18,11 +18,11 @@ export interface Post extends PostFrontmatter {
 }
 
 export const TAB_CONFIG: Record<Tab, { label: string; color: string; colorClass: string }> = {
-  devlog: { label: 'Dev Log', color: '#a5a5ff', colorClass: 'text-devlog' },
   ai: { label: 'AI News', color: '#22d3ee', colorClass: 'text-ainews' },
   crypto: { label: 'Crypto', color: '#fbbf24', colorClass: 'text-crypto' },
   stocks: { label: 'Stocks', color: '#34d399', colorClass: 'text-stocks' },
   hot: { label: 'Hot Topics', color: '#fb923c', colorClass: 'text-hottopic' },
+  devlog: { label: 'My Dev Log', color: '#a5a5ff', colorClass: 'text-devlog' },
 };
 
 // Data source types
