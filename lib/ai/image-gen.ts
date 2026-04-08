@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import type { Tab } from '@/lib/types';
 
-const NANOBANANA_API_KEY = process.env.NANOBANANA_API_KEY;
-const NANOBANANA_URL = 'https://api.nanobanana.com/v1/images/generate';
+const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY;
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
 
 export async function generateCoverImage(
   tab: Tab,
@@ -11,8 +11,8 @@ export async function generateCoverImage(
   date: string,
   imagePrompt: string,
 ): Promise<string> {
-  if (!NANOBANANA_API_KEY) {
-    console.log('[image-gen] NANOBANANA_API_KEY 없음, 이미지 건너뜀');
+  if (!GOOGLE_AI_API_KEY) {
+    console.log('[image-gen] GOOGLE_AI_API_KEY 없음, 이미지 건너뜀');
     return '';
   }
 
@@ -21,43 +21,45 @@ export async function generateCoverImage(
     return '';
   }
 
-  const prompt = `${imagePrompt}, no text, no letters, no words, no numbers, no signs, no charts`;
+  const prompt = `Generate a blog cover image: ${imagePrompt}, no text, no letters, no words, no numbers, no signs, no charts. Photorealistic, editorial photography style, 16:9 aspect ratio.`;
 
   try {
-    const response = await fetch(NANOBANANA_URL, {
+    const response = await fetch(`${GEMINI_URL}?key=${GOOGLE_AI_API_KEY}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${NANOBANANA_API_KEY}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        prompt,
-        model: 'gemini-2.5-flash-image',
-        aspect_ratio: '16:9',
-        num_images: 1,
+        contents: [{
+          parts: [{ text: prompt }],
+        }],
+        generationConfig: {
+          responseModalities: ['TEXT', 'IMAGE'],
+        },
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error(`[image-gen] API 에러 ${response.status}: ${errText.slice(0, 200)}`);
+      console.error(`[image-gen] Gemini API 에러 ${response.status}: ${errText.slice(0, 200)}`);
       return '';
     }
 
     const data = await response.json();
-    const imageUrl = data.images?.[0]?.url || data.url || data.image_url;
-    if (!imageUrl) {
-      console.log('[image-gen] 응답에 이미지 URL 없음');
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const imagePart = parts.find((p: any) => p.inlineData?.mimeType?.startsWith('image/'));
+
+    if (!imagePart) {
+      console.log('[image-gen] 응답에 이미지 없음');
       return '';
     }
 
-    const imgResponse = await fetch(imageUrl);
-    const buffer = Buffer.from(await imgResponse.arrayBuffer());
+    const buffer = Buffer.from(imagePart.inlineData.data, 'base64');
 
     const dir = path.join(process.cwd(), 'public', 'images', 'posts', tab);
     fs.mkdirSync(dir, { recursive: true });
 
-    const filename = `${date}.png`;
+    const ext = imagePart.inlineData.mimeType.includes('png') ? 'png' : 'jpg';
+    const filename = `${date}.${ext}`;
     const filepath = path.join(dir, filename);
     fs.writeFileSync(filepath, buffer);
 
