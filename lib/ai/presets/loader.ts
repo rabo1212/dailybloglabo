@@ -32,7 +32,7 @@ export function loadPreset(tab: Tab): Preset {
 }
 
 function parseYaml(raw: string): Preset {
-  const result: Record<string, any> = {};
+  const result: Record<string, unknown> = {};
   let currentSection = '';
 
   for (const line of raw.split('\n')) {
@@ -61,7 +61,7 @@ function parseYaml(raw: string): Preset {
         const [key, ...rest] = cleaned.split(':');
         const value = rest.join(':').trim().replace(/^["']|["']$/g, '');
         if (typeof result[currentSection] === 'object' && !Array.isArray(result[currentSection])) {
-          result[currentSection][key.trim()] = value === 'true' ? true : value === 'false' ? false : value;
+          (result[currentSection] as Record<string, unknown>)[key.trim()] = value === 'true' ? true : value === 'false' ? false : value;
         }
       }
     }

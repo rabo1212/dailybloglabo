@@ -4,7 +4,7 @@ config({ path: '.env.local' });
 
 import fs from 'fs';
 import path from 'path';
-import { generatePost, generateImagePrompt } from '../lib/ai/claude';
+import { callClaudeWithRetry } from '../lib/ai/claude-cli';
 import { generateCoverImage } from '../lib/ai/image-gen';
 
 const SOUL_PATH = '/Users/labo/My_vault/clawd/SOUL_뜨미.md';
@@ -111,7 +111,8 @@ async function generateEpisode(
 작업 로그 원본:
 ${rawData.slice(0, 6000)}${repoList}`;
 
-  const content = await generatePost(systemPrompt, userPrompt, 'ko');
+  const postResult = await callClaudeWithRetry({ systemPrompt, message: userPrompt, timeout: 120000 });
+  const content = postResult.response;
 
   // Extract title
   const lines = content.split('\n');
@@ -122,7 +123,12 @@ ${rawData.slice(0, 6000)}${repoList}`;
 
   // Generate cover image
   console.log(`[EP.${String(epNum).padStart(2, '0')}] Generating cover image...`);
-  const imagePrompt = await generateImagePrompt(body.slice(0, 1500), 'devlog');
+  const imgPromptResult = await callClaudeWithRetry({
+    systemPrompt: '기사 내용을 바탕으로 블로그 커버 이미지 프롬프트를 영어로 생성해. 60단어 이내. 사실적 사진 스타일. 텍스트/차트/그래프 절대 포함하지 마. 프롬프트만 출력.',
+    message: body.slice(0, 1500),
+    timeout: 30000,
+  });
+  const imagePrompt = imgPromptResult.response;
   const imagePath = await generateCoverImage('devlog', title, dateStr, imagePrompt || '');
 
   // Write MDX
