@@ -23,7 +23,6 @@ export async function callClaude(opts: CLIOptions): Promise<CLIResult> {
     '--verbose',
     '--permission-mode', 'bypassPermissions',
     '--disable-slash-commands',
-    '--bare',
     '--system-prompt', systemPrompt,
   ];
 

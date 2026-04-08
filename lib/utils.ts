@@ -54,5 +54,6 @@ export function formatDate(dateStr: string): string {
 
 export function todayStr(): string {
   const now = new Date();
-  return now.toISOString().split('T')[0];
+  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return kst.toISOString().split('T')[0];
 }
