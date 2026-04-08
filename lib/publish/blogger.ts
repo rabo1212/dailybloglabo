@@ -6,6 +6,7 @@ interface BloggerPublishOpts {
   title: string;
   content: string;
   labels?: string[];
+  imagePath?: string;
 }
 
 async function getAccessToken(): Promise<string> {
@@ -43,7 +44,12 @@ export async function publishBlogger(opts: BloggerPublishOpts): Promise<{ postId
   }
 
   const accessToken = await getAccessToken();
-  const htmlContent = markdownToHtml(opts.content);
+  let htmlContent = markdownToHtml(opts.content);
+
+  if (opts.imagePath) {
+    const imageUrl = `https://dailybloglabo.vercel.app${opts.imagePath}`;
+    htmlContent = `<div style="text-align:center;margin-bottom:20px"><img src="${imageUrl}" alt="${opts.title}" style="max-width:100%;border-radius:8px" /></div>\n${htmlContent}`;
+  }
 
   const response = await fetch(`${BLOGGER_API}/blogs/${blogId}/posts/`, {
     method: 'POST',

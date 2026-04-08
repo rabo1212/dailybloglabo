@@ -13,6 +13,7 @@ export interface PublishOpts {
   content: string;
   tags?: string[];
   tab?: string;
+  imagePath?: string;
 }
 
 export async function publishAll(opts: PublishOpts): Promise<PublishResult[]> {
@@ -25,6 +26,7 @@ export async function publishAll(opts: PublishOpts): Promise<PublishResult[]> {
         title: opts.title,
         content: opts.content,
         labels: opts.tags,
+        imagePath: opts.imagePath,
       });
       results.push({ platform: 'blogger', success: true, url });
     } catch (err) {

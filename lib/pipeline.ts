@@ -128,7 +128,7 @@ ${body}
       devlog: ['개발일지'],
       trending: ['핫토픽', '트렌드'],
     };
-    publishResults = await publishAll({ title, content: body, tags: TAB_LABELS[tab] });
+    publishResults = await publishAll({ title, content: body, tags: TAB_LABELS[tab], imagePath });
     for (const r of publishResults) {
       if (r.success) {
         console.log(`  [OK] ${r.platform}: ${r.url}`);
