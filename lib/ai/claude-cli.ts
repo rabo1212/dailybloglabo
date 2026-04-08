@@ -22,6 +22,8 @@ export async function callClaude(opts: CLIOptions): Promise<CLIResult> {
     '--output-format', 'stream-json',
     '--verbose',
     '--permission-mode', 'bypassPermissions',
+    '--disable-slash-commands',
+    '--bare',
     '--system-prompt', systemPrompt,
   ];
 
