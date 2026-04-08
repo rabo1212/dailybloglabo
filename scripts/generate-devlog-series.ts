@@ -123,7 +123,7 @@ ${rawData.slice(0, 6000)}${repoList}`;
   // Generate cover image
   console.log(`[EP.${String(epNum).padStart(2, '0')}] Generating cover image...`);
   const imagePrompt = await generateImagePrompt(body.slice(0, 1500), 'devlog');
-  const imagePath = await generateCoverImage('devlog', title, dateStr, 'am', imagePrompt || undefined);
+  const imagePath = await generateCoverImage('devlog', title, dateStr, imagePrompt || '');
 
   // Write MDX
   const mdx = `---

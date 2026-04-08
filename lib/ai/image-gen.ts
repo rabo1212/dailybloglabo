@@ -1,73 +1,70 @@
-import { fal } from '@fal-ai/client';
 import fs from 'fs';
 import path from 'path';
-import type { Tab, Edition } from '@/lib/types';
+import type { Tab } from '@/lib/types';
 
-const FALLBACK_STYLES: Record<Tab, string> = {
-  devlog:   'editorial photograph of a developer seen from behind sitting at a clean desk with dual monitors, warm lamp light, cozy night workspace, shallow depth of field, cinematic',
-  health:   'editorial photograph of a person seen from behind doing morning yoga on a rooftop at sunrise, soft golden light, peaceful atmosphere, shallow depth of field, cinematic',
-  finance:  'editorial photograph of a modern glass skyscraper financial district at golden hour, a silhouette of a person looking up at the buildings, warm light, wide angle',
-  tech:     'editorial photograph of a person seen from behind looking at a large glowing holographic display in a dark room, blue and purple ambient light, cinematic, futuristic',
-  trending: 'editorial photograph of a bustling city intersection at sunset seen from above, distant silhouettes of people crossing, warm golden light, cinematic aerial view',
-};
+const NANOBANANA_API_KEY = process.env.NANOBANANA_API_KEY;
+const NANOBANANA_URL = 'https://api.nanobanana.com/v1/images/generate';
 
 export async function generateCoverImage(
   tab: Tab,
   title: string,
   date: string,
-  edition: Edition,
-  imagePrompt?: string
+  imagePrompt: string,
 ): Promise<string> {
-  const falKey = process.env.FAL_KEY;
-  if (!falKey) {
-    console.log('[image-gen] No FAL_KEY found, skipping image generation');
+  if (!NANOBANANA_API_KEY) {
+    console.log('[image-gen] NANOBANANA_API_KEY 없음, 이미지 건너뜀');
     return '';
   }
 
-  fal.config({ credentials: falKey });
+  if (!imagePrompt) {
+    console.log('[image-gen] 이미지 프롬프트 없음, 건너뜀');
+    return '';
+  }
 
-  // Use AI-generated prompt if available, otherwise fallback
-  const noText = 'no text, no letters, no words, no numbers, no signs, no charts, no graphs, no data visualizations';
-  const prompt = imagePrompt
-    ? `${imagePrompt}, ${noText}`
-    : `${FALLBACK_STYLES[tab]}, ${noText}`;
+  const prompt = `${imagePrompt}, no text, no letters, no words, no numbers, no signs, no charts`;
 
   try {
-    const result = await fal.subscribe('fal-ai/flux-pro/v1.1', {
-      input: {
-        prompt,
-        image_size: 'landscape_16_9',
-        num_images: 1,
-        safety_tolerance: '5',
+    const response = await fetch(NANOBANANA_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${NANOBANANA_API_KEY}`,
       },
+      body: JSON.stringify({
+        prompt,
+        model: 'gemini-2.5-flash-image',
+        aspect_ratio: '16:9',
+        num_images: 1,
+      }),
     });
 
-    const imageData = result.data?.images?.[0];
-    const imageUrl = imageData?.url;
-    if (!imageUrl) {
-      console.log('[image-gen] No image URL in response');
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`[image-gen] API 에러 ${response.status}: ${errText.slice(0, 200)}`);
       return '';
     }
 
-    const response = await fetch(imageUrl);
-    const buffer = Buffer.from(await response.arrayBuffer());
+    const data = await response.json();
+    const imageUrl = data.images?.[0]?.url || data.url || data.image_url;
+    if (!imageUrl) {
+      console.log('[image-gen] 응답에 이미지 URL 없음');
+      return '';
+    }
 
-    const contentType = response.headers.get('content-type') || '';
-    let ext = 'jpg';
-    if (contentType.includes('webp')) ext = 'webp';
-    else if (contentType.includes('png')) ext = 'png';
+    const imgResponse = await fetch(imageUrl);
+    const buffer = Buffer.from(await imgResponse.arrayBuffer());
 
     const dir = path.join(process.cwd(), 'public', 'images', 'posts', tab);
     fs.mkdirSync(dir, { recursive: true });
 
-    const filename = `${date}-${edition}.${ext}`;
+    const filename = `${date}.png`;
     const filepath = path.join(dir, filename);
     fs.writeFileSync(filepath, buffer);
 
-    console.log(`[image-gen] Saved cover image: ${filepath}`);
+    console.log(`[image-gen] 이미지 저장: ${filepath}`);
     return `/images/posts/${tab}/${filename}`;
   } catch (err) {
-    console.error('[image-gen] Failed:', err);
+    console.error('[image-gen] 실패:', err);
     return '';
   }
 }

@@ -54,7 +54,7 @@ Writing standards:
   const imagePrompt = await generateImagePrompt(body, tab);
   console.log(`[pipeline] Image prompt: ${imagePrompt.slice(0, 80)}...`);
   console.log(`[pipeline] Generating cover image...`);
-  const imagePath = await generateCoverImage(tab, title, date, edition, imagePrompt);
+  const imagePath = await generateCoverImage(tab, title, date, imagePrompt);
 
   // Step 4: Write MDX file
   // Korean posts get -ko suffix, English posts have no suffix (backwards compatible)
