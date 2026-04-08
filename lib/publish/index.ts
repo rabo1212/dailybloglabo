@@ -1,4 +1,4 @@
-import { publishTistory } from './tistory';
+import { publishBlogger } from './blogger';
 import { publishNaver } from './naver';
 
 export interface PublishResult {
@@ -12,22 +12,23 @@ export interface PublishOpts {
   title: string;
   content: string;
   tags?: string[];
+  tab?: string;
 }
 
 export async function publishAll(opts: PublishOpts): Promise<PublishResult[]> {
   const results: PublishResult[] = [];
 
-  // 티스토리 발행
-  if (process.env.TISTORY_ACCESS_TOKEN) {
+  // Blogger 발행
+  if (process.env.BLOGGER_REFRESH_TOKEN) {
     try {
-      const { url } = await publishTistory({
+      const { url } = await publishBlogger({
         title: opts.title,
         content: opts.content,
-        tags: opts.tags,
+        labels: opts.tags,
       });
-      results.push({ platform: 'tistory', success: true, url });
+      results.push({ platform: 'blogger', success: true, url });
     } catch (err) {
-      results.push({ platform: 'tistory', success: false, error: (err as Error).message });
+      results.push({ platform: 'blogger', success: false, error: (err as Error).message });
     }
   }
 
