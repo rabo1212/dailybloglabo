@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="border-t border-card-border mt-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <p className="text-center text-sm text-text-dim">
-          DAYLOG_EV
+          데일리블로그라보
         </p>
       </div>
     </footer>

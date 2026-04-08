@@ -1,4 +1,10 @@
-import type { StockData } from '@/lib/types';
+interface StockData {
+  sp500: { price: string; change: string };
+  nasdaq: { price: string; change: string };
+  futures?: { sp500: string; nasdaq: string };
+  movers: { symbol: string; price: number; change: number; reason?: string }[];
+  news: { title: string; summary: string; url: string }[];
+}
 
 const TIMEOUT = 2000;
 

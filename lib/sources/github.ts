@@ -1,4 +1,9 @@
-import type { GitHubEvent } from '@/lib/types';
+interface GitHubEvent {
+  type: string;
+  repo: { name: string };
+  payload: Record<string, unknown>;
+  created_at: string;
+}
 
 const TIMEOUT = 2000;
 

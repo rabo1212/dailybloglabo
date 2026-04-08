@@ -1,4 +1,14 @@
-import type { Edition, CryptoData } from '@/lib/types';
+import type { Edition } from '@/lib/types';
+
+interface CryptoData {
+  btc: { price: number; change24h: number };
+  eth: { price: number; change24h: number };
+  totalMarketCap: string;
+  totalVolume: string;
+  fearGreed: number;
+  topMovers: { name: string; symbol: string; price: number; change: number }[];
+  news: { title: string; summary: string; url: string }[];
+}
 
 export function cryptoPrompt(edition: Edition, data: CryptoData): string {
   const moversList = data.topMovers

@@ -1,4 +1,10 @@
-import type { Edition, TrendingData } from '@/lib/types';
+import type { Edition } from '@/lib/types';
+
+interface TrendingData {
+  reddit: { sub: string; title: string; upvotes: number; comments: number; url: string }[];
+  hn: { title: string; points: number; url?: string }[];
+  trends: { query: string; traffic: string }[];
+}
 
 export function hotTopicsPrompt(edition: Edition, data: TrendingData): string {
   const redditList = data.reddit

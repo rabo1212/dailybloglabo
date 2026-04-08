@@ -1,4 +1,12 @@
-import type { CryptoData } from '@/lib/types';
+interface CryptoData {
+  btc: { price: number; change24h: number };
+  eth: { price: number; change24h: number };
+  totalMarketCap: string;
+  totalVolume: string;
+  fearGreed: number;
+  topMovers: { name: string; symbol: string; price: number; change: number }[];
+  news: { title: string; summary: string; url: string }[];
+}
 
 const TIMEOUT = 2000;
 

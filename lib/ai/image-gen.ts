@@ -4,11 +4,11 @@ import path from 'path';
 import type { Tab, Edition } from '@/lib/types';
 
 const FALLBACK_STYLES: Record<Tab, string> = {
-  devlog: 'editorial photograph of a developer seen from behind sitting at a clean desk with dual monitors, warm lamp light, cozy night workspace, shallow depth of field, cinematic',
-  ai: 'editorial photograph of a person seen from behind looking at a large glowing holographic display in a dark room, blue and purple ambient light, cinematic, futuristic',
-  crypto: 'editorial photograph of golden Bitcoin coins stacked on a dark reflective marble surface, dramatic rim lighting, shallow depth of field, luxury feel',
-  stocks: 'editorial photograph of a modern glass skyscraper financial district at golden hour, a silhouette of a person looking up at the buildings, warm light, wide angle',
-  hot: 'editorial photograph of a bustling city intersection at sunset seen from above, distant silhouettes of people crossing, warm golden light, cinematic aerial view',
+  devlog:   'editorial photograph of a developer seen from behind sitting at a clean desk with dual monitors, warm lamp light, cozy night workspace, shallow depth of field, cinematic',
+  health:   'editorial photograph of a person seen from behind doing morning yoga on a rooftop at sunrise, soft golden light, peaceful atmosphere, shallow depth of field, cinematic',
+  finance:  'editorial photograph of a modern glass skyscraper financial district at golden hour, a silhouette of a person looking up at the buildings, warm light, wide angle',
+  tech:     'editorial photograph of a person seen from behind looking at a large glowing holographic display in a dark room, blue and purple ambient light, cinematic, futuristic',
+  trending: 'editorial photograph of a bustling city intersection at sunset seen from above, distant silhouettes of people crossing, warm golden light, cinematic aerial view',
 };
 
 export async function generateCoverImage(

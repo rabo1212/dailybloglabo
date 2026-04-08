@@ -18,9 +18,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>DAYLOG_EV</title>
+    <title>데일리블로그라보</title>
     <link>${siteUrl}</link>
-    <description>Automated multi-channel news blog powered by AI</description>
+    <description>매일 자동 발행되는 AI 블로그</description>
     <language>ko</language>
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
     ${items}

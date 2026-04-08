@@ -5,7 +5,7 @@ config({ path: '.env.local' });
 import { runPipeline } from '../lib/pipeline';
 import { Tab, Edition, Lang } from '../lib/types';
 
-const VALID_TABS: Tab[] = ['devlog', 'ai', 'crypto', 'stocks', 'hot'];
+const VALID_TABS: Tab[] = ['devlog', 'health', 'finance', 'tech', 'trending'];
 const VALID_EDITIONS: Edition[] = ['am', 'pm'];
 const VALID_LANGS: Lang[] = ['en', 'ko'];
 

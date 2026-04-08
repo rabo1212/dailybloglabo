@@ -3,17 +3,9 @@ import path from 'path';
 import { Tab, Edition, Lang } from './types';
 import { todayStr } from './utils';
 import { fetchGitHubActivity } from './sources/github';
-import { fetchAINews } from './sources/ai-news';
-import { fetchCryptoData } from './sources/crypto';
-import { fetchStockData } from './sources/stocks';
-import { fetchTrendingData } from './sources/trending';
 import { generatePost, generateImagePrompt } from './ai/claude';
 import { generateCoverImage } from './ai/image-gen';
 import { devlogPrompt } from './ai/prompts/devlog';
-import { aiNewsPrompt } from './ai/prompts/ai-news';
-import { cryptoPrompt } from './ai/prompts/crypto';
-import { stocksPrompt } from './ai/prompts/stocks';
-import { hotTopicsPrompt } from './ai/prompts/hot-topics';
 
 interface PipelineResult {
   tab: Tab;
@@ -79,18 +71,6 @@ Writing standards:
   return { tab, edition, lang, date, filePath, imagePath, title };
 }
 
-function getExistingTitles(tab: Tab): string[] {
-  const tabDir = path.join(process.cwd(), 'content/posts', tab);
-  if (!fs.existsSync(tabDir)) return [];
-  const files = fs.readdirSync(tabDir).filter(f => f.endsWith('.mdx'));
-  const titles: string[] = [];
-  for (const file of files) {
-    const raw = fs.readFileSync(path.join(tabDir, file), 'utf-8');
-    const match = raw.match(/^title:\s*"(.+)"/m);
-    if (match) titles.push(match[1]);
-  }
-  return titles;
-}
 
 async function buildPrompt(tab: Tab, edition: Edition): Promise<string> {
   switch (tab) {
@@ -110,27 +90,12 @@ async function buildPrompt(tab: Tab, edition: Edition): Promise<string> {
         details,
       });
     }
-    case 'ai': {
-      const sources = await fetchAINews();
-      return aiNewsPrompt(edition, sources);
-    }
-    case 'crypto': {
-      const data = await fetchCryptoData();
-      return cryptoPrompt(edition, data);
-    }
-    case 'stocks': {
-      const data = await fetchStockData();
-      return stocksPrompt(edition, data);
-    }
-    case 'hot': {
-      const data = await fetchTrendingData();
-      const existing = getExistingTitles('hot');
-      let prompt = hotTopicsPrompt(edition, data);
-      if (existing.length > 0) {
-        prompt += `\n\nIMPORTANT: The following topics have ALREADY been covered. Do NOT write about them again. Pick DIFFERENT stories from the trending data:\n${existing.map(t => `- "${t}"`).join('\n')}`;
-      }
-      return prompt;
-    }
+    case 'health':
+    case 'finance':
+    case 'tech':
+    case 'trending':
+      // TODO: Task 4 — replace with new data source prompts
+      throw new Error(`[pipeline] buildPrompt not yet implemented for tab: ${tab}`);
   }
 }
 

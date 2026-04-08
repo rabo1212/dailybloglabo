@@ -5,7 +5,7 @@ import { getPost, getPostsByTab, formatDate } from "@/lib/utils";
 import { TAB_CONFIG, Tab } from "@/lib/types";
 import EditionBadge from "@/components/EditionBadge";
 
-const VALID_TABS: Tab[] = ["ai", "crypto", "stocks", "hot", "devlog"];
+const VALID_TABS: Tab[] = ["health", "finance", "tech", "devlog", "trending"];
 
 interface PostPageProps {
   params: { tab: string; slug: string };
@@ -17,7 +17,7 @@ export function generateMetadata({ params }: PostPageProps) {
   const post = getPost(tab, params.slug);
   if (!post) return {};
   return {
-    title: `${post.title} - DAYLOG_EV`,
+    title: `${post.title} - 데일리블로그라보`,
     description: post.summary,
   };
 }

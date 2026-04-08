@@ -3,7 +3,7 @@ import { getPostsByTab } from "@/lib/utils";
 import { TAB_CONFIG, Tab } from "@/lib/types";
 import PostCard from "@/components/PostCard";
 
-const VALID_TABS: Tab[] = ["ai", "crypto", "stocks", "hot", "devlog"];
+const VALID_TABS: Tab[] = ["health", "finance", "tech", "devlog", "trending"];
 
 interface TabPageProps {
   params: { tab: string };
@@ -18,7 +18,7 @@ export function generateMetadata({ params }: TabPageProps) {
   if (!VALID_TABS.includes(tab)) return {};
   const config = TAB_CONFIG[tab];
   return {
-    title: `${config.label} - DAYLOG_EV`,
+    title: `${config.label} - 데일리블로그라보`,
   };
 }
 

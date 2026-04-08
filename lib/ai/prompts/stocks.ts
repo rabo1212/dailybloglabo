@@ -1,4 +1,12 @@
-import type { Edition, StockData } from '@/lib/types';
+import type { Edition } from '@/lib/types';
+
+interface StockData {
+  sp500: { price: string; change: string };
+  nasdaq: { price: string; change: string };
+  futures?: { sp500: string; nasdaq: string };
+  movers: { symbol: string; price: number; change: number; reason?: string }[];
+  news: { title: string; summary: string; url: string }[];
+}
 
 export function stocksPrompt(edition: Edition, data: StockData): string {
   const moversList = data.movers

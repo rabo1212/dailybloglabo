@@ -6,7 +6,7 @@ import { Post, PostFrontmatter, Tab } from './types';
 const CONTENT_DIR = path.join(process.cwd(), 'content/posts');
 
 export function getAllPosts(): Post[] {
-  const tabs: Tab[] = ['ai', 'crypto', 'stocks', 'hot', 'devlog'];
+  const tabs: Tab[] = ['health', 'finance', 'tech', 'devlog', 'trending'];
   const posts: Post[] = [];
 
   for (const tab of tabs) {

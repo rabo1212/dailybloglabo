@@ -1,4 +1,10 @@
-import type { Edition, AISources } from '@/lib/types';
+import type { Edition } from '@/lib/types';
+
+interface AISources {
+  articles: { source: string; title: string; summary: string; url: string }[];
+  hn: { title: string; points: number; comments: number; url?: string }[];
+  arxiv?: { title: string; abstract: string; url: string }[];
+}
 
 export function aiNewsPrompt(edition: Edition, sources: AISources): string {
   const articlesList = sources.articles

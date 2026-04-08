@@ -1,4 +1,15 @@
-import type { TrendingData, HNStory } from '@/lib/types';
+interface HNStory {
+  title: string;
+  url?: string;
+  score: number;
+  descendants: number;
+}
+
+interface TrendingData {
+  reddit: { sub: string; title: string; upvotes: number; comments: number; url: string }[];
+  hn: { title: string; points: number; url?: string }[];
+  trends: { query: string; traffic: string }[];
+}
 
 const TIMEOUT = 2000;
 

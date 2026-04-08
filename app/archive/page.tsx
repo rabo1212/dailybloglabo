@@ -4,7 +4,7 @@ import { TAB_CONFIG } from '@/lib/types';
 import EditionBadge from '@/components/EditionBadge';
 
 export const metadata = {
-  title: 'Archive - DAYLOG_EV',
+  title: 'Archive - 데일리블로그라보',
 };
 
 export default function ArchivePage() {

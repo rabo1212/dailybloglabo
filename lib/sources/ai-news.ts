@@ -1,4 +1,15 @@
-import type { AISources, HNStory } from '@/lib/types';
+interface HNStory {
+  title: string;
+  url?: string;
+  score: number;
+  descendants: number;
+}
+
+interface AISources {
+  articles: { source: string; title: string; summary: string; url: string }[];
+  hn: { title: string; points: number; comments: number; url?: string }[];
+  arxiv?: { title: string; abstract: string; url: string }[];
+}
 
 const TIMEOUT = 2000;
 
