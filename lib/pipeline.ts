@@ -121,7 +121,14 @@ ${body}
   console.log(`[pipeline] 멀티플랫폼 발행 중...`);
   let publishResults: PublishResult[] = [];
   try {
-    publishResults = await publishAll({ title, content: body, tags: [] });
+    const TAB_LABELS: Record<Tab, string[]> = {
+      health: ['건강', '생활'],
+      finance: ['재테크', '경제'],
+      tech: ['테크', 'AI'],
+      devlog: ['개발일지'],
+      trending: ['핫토픽', '트렌드'],
+    };
+    publishResults = await publishAll({ title, content: body, tags: TAB_LABELS[tab] });
     for (const r of publishResults) {
       if (r.success) {
         console.log(`  [OK] ${r.platform}: ${r.url}`);
