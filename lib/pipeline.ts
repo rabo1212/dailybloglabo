@@ -65,7 +65,7 @@ export async function runPipeline(tab: Tab): Promise<PipelineResult> {
   const postResult = await callClaudeWithRetry({
     systemPrompt,
     message,
-    timeout: 120000,
+    timeout: 300000,
   });
 
   const postContent = postResult.response;

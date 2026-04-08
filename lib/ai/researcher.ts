@@ -29,7 +29,7 @@ export async function research(tab: Tab): Promise<ResearchResult> {
   const result = await callClaudeWithRetry({
     systemPrompt: `너는 블로그 글감을 찾는 리서치 에이전트야. 오늘 날짜는 ${today}이야. 반드시 웹 검색을 해서 최신 정보를 찾아. JSON 배열로만 응답해. 형식: [{"title":"제목","summary":"요약","source":"출처URL","keyData":"핵심 수치/데이터"}]`,
     message: query,
-    timeout: 60000,
+    timeout: 180000,
   });
 
   let topics: ResearchResult['topics'] = [];
