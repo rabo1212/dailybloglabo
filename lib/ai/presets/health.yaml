@@ -1,0 +1,22 @@
+name: health
+label: "건강/생활"
+tone: "친근하고 실용적인 정보 전달, 전문가가 쉽게 설명하듯"
+language: ko
+structure:
+  intro: "놀라운 통계 또는 일상 속 공감 질문으로 시작"
+  sections: "3-4"
+  word_count: "1000-1500"
+  ending: "오늘부터 실천할 수 있는 팁 3가지 요약"
+seo:
+  meta_description: true
+  keywords_count: "5-8"
+style:
+  emoji_level: "minimal"
+  sentence_ending: "mixed"
+  paragraph_length: "medium"
+forbidden_patterns:
+  - "혁신적인"
+  - "획기적인"
+  - "원활한"
+  - "놀라운 효과"
+  - "반드시 알아야 할"

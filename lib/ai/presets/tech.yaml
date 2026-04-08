@@ -1,0 +1,21 @@
+name: tech
+label: "테크/AI"
+tone: "개발자가 동료에게 설명하듯, 기술적이지만 접근 가능"
+language: ko
+structure:
+  intro: "주요 기술 뉴스 훅 또는 트렌드 요약으로 시작"
+  sections: "3-5"
+  word_count: "1000-1500"
+  ending: "개발자가 관심 가질 만한 시사점 정리"
+seo:
+  meta_description: true
+  keywords_count: "5-8"
+style:
+  emoji_level: "none"
+  sentence_ending: "casual"
+  paragraph_length: "short"
+forbidden_patterns:
+  - "혁신적인"
+  - "획기적인"
+  - "패러다임 전환"
+  - "게임체인저"

@@ -1,0 +1,22 @@
+name: trending
+label: "핫토픽"
+tone: "빠르고 흥미로운 이슈 브리핑, 팩트 중심"
+language: ko
+structure:
+  intro: "가장 핫한 이슈 한 줄 훅으로 시작"
+  sections: "3-5"
+  word_count: "1000-1500"
+  ending: "왜 이게 중요한지 한 줄 관점"
+seo:
+  meta_description: true
+  keywords_count: "5-8"
+style:
+  emoji_level: "minimal"
+  sentence_ending: "mixed"
+  paragraph_length: "short"
+forbidden_patterns:
+  - "혁신적인"
+  - "획기적인"
+  - "충격"
+  - "경악"
+  - "소름"

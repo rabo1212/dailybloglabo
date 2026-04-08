@@ -1,0 +1,22 @@
+name: finance
+label: "재테크/경제"
+tone: "신뢰감 있고 데이터 기반, 쉬운 경제 해설"
+language: ko
+structure:
+  intro: "오늘의 핵심 경제 지표나 뉴스로 시작"
+  sections: "3-4"
+  word_count: "1000-1500"
+  ending: "투자자/소비자가 알아야 할 핵심 포인트 정리"
+seo:
+  meta_description: true
+  keywords_count: "5-8"
+style:
+  emoji_level: "none"
+  sentence_ending: "mixed"
+  paragraph_length: "medium"
+forbidden_patterns:
+  - "혁신적인"
+  - "획기적인"
+  - "대박"
+  - "폭등"
+  - "무조건"

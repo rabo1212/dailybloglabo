@@ -1,0 +1,19 @@
+name: devlog
+label: "개발일지"
+tone: "솔직한 1인칭, 빌드인퍼블릭 스타일"
+language: ko
+structure:
+  intro: "오늘 뭘 했는지 한 줄 요약"
+  sections: "2-3"
+  word_count: "500-800"
+  ending: "내일 할 일 또는 배운 점"
+seo:
+  meta_description: true
+  keywords_count: "3-5"
+style:
+  emoji_level: "none"
+  sentence_ending: "casual"
+  paragraph_length: "short"
+forbidden_patterns:
+  - "혁신적인"
+  - "획기적인"
