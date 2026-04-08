@@ -2,8 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { Tab } from '@/lib/types';
 
-const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY;
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
 
 export async function generateCoverImage(
   tab: Tab,
@@ -11,6 +10,7 @@ export async function generateCoverImage(
   date: string,
   imagePrompt: string,
 ): Promise<string> {
+  const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY;
   if (!GOOGLE_AI_API_KEY) {
     console.log('[image-gen] GOOGLE_AI_API_KEY 없음, 이미지 건너뜀');
     return '';
