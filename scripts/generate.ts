@@ -4,6 +4,7 @@ config({ path: '.env.local' });
 
 import { runPipeline } from '../lib/pipeline';
 import { Tab } from '../lib/types';
+import { sendTelegramNotify } from '../lib/notify';
 
 const VALID_TABS: Tab[] = ['health', 'finance', 'tech', 'devlog', 'trending'];
 
@@ -15,14 +16,29 @@ async function main() {
   if (allFlag) {
     console.log(`\n=== 전체 탭 생성 시작 ===\n`);
 
+    const results: Array<{ tab: Tab; success: boolean; title?: string; error?: string }> = [];
+
     for (const tab of VALID_TABS) {
       try {
         const result = await runPipeline(tab);
+        results.push({ tab, success: true, title: result.title });
         console.log(`  [OK] ${tab}: ${result.title}`);
       } catch (err) {
+        results.push({ tab, success: false, error: String(err) });
         console.error(`  [FAIL] ${tab}:`, err);
       }
     }
+
+    const today = new Date().toISOString().split('T')[0];
+    const successCount = results.filter(r => r.success).length;
+    const summary = results.map(r =>
+      r.success ? `✅ ${r.tab}: ${r.title}` : `❌ ${r.tab}: 실패`
+    ).join('\n');
+
+    await sendTelegramNotify(
+      `📝 *DailyBlogLabo* 자동 발행 완료\n\n날짜: ${today}\n성공: ${successCount}/${VALID_TABS.length}\n\n${summary}`
+    );
+
     return;
   }
 

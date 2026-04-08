@@ -8,6 +8,7 @@ import { research } from './ai/researcher';
 import { generateCoverImage } from './ai/image-gen';
 import { fetchGitHubActivity } from './sources/github';
 import { devlogPrompt } from './ai/prompts/devlog';
+import { publishAll, PublishResult } from './publish';
 
 interface PipelineResult {
   tab: Tab;
@@ -15,6 +16,7 @@ interface PipelineResult {
   filePath: string;
   imagePath: string;
   title: string;
+  publishResults?: PublishResult[];
 }
 
 export async function runPipeline(tab: Tab): Promise<PipelineResult> {
@@ -114,7 +116,24 @@ ${body}
   fs.writeFileSync(filePath, mdxContent, 'utf-8');
 
   console.log(`[pipeline] 저장 완료: ${filePath} (${postResult.durationMs}ms)`);
-  return { tab, date, filePath, imagePath, title };
+
+  // Step 5: 멀티플랫폼 발행
+  console.log(`[pipeline] 멀티플랫폼 발행 중...`);
+  let publishResults: PublishResult[] = [];
+  try {
+    publishResults = await publishAll({ title, content: body, tags: [] });
+    for (const r of publishResults) {
+      if (r.success) {
+        console.log(`  [OK] ${r.platform}: ${r.url}`);
+      } else {
+        console.log(`  [SKIP] ${r.platform}: ${r.error}`);
+      }
+    }
+  } catch (err) {
+    console.error('[pipeline] 발행 실패 (계속 진행):', err);
+  }
+
+  return { tab, date, filePath, imagePath, title, publishResults };
 }
 
 function getExistingTitles(tab: Tab): string[] {
